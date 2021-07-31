@@ -6,6 +6,8 @@
 package pl.currency.exchange.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,11 +49,16 @@ public class AccountsController {
 
     @Operation(
             summary = "Pobierz informacje o koncie",
-            description = "Metoda zwraca informacje o koncie wraz z utworzonymi subkontami"
+            description = "Metoda zwraca informacje o koncie wraz z utworzonymi subkontami",
+            responses = {
+                @ApiResponse(responseCode = "404", description = "Nie znaleziono konta")
+            }
     )
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/{pesel}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccount(@PathVariable @ValidPesel(message = "{pesel.validpesel}") String pesel) {
+    public ResponseEntity<?> getAccount(
+            @Parameter(description = "Pesel identyfikujący konto.", required = true)
+            @PathVariable @ValidPesel(message = "{pesel.validpesel}") String pesel) {
         return accountService.getAccount(pesel);
     }
 
@@ -70,7 +77,7 @@ public class AccountsController {
             description = "Metoda tworzy subkonto walutowe w ramach konta głównego"
     )
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = "/subaccount", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/subaccounts", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createSubAccount(@Valid @RequestBody CreateSubAccountDto createSubAccountDto) {
         return accountService.createSubAccount(createSubAccountDto);
     }

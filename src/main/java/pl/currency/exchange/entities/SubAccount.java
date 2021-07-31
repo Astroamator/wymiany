@@ -43,6 +43,7 @@ public class SubAccount {
     private Currency currency;
     
     @Transient
+    @JsonIgnore
     private float echangeRate;
     
 }

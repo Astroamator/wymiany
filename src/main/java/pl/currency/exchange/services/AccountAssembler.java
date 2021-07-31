@@ -23,8 +23,12 @@ public class AccountAssembler {
 
     public Account createAccountFromDto(CreateAccountDto createAccountDto) {
         Set<SubAccount> subAccounts = new HashSet<>();
-        subAccounts.add(createSubaccount(Currency.getInstance("PLN"), createAccountDto.getBalance()));
-        subAccounts.add(createSubaccount(Currency.getInstance("USD"), BigDecimal.ZERO));
+
+        Currency plnCurrency = Currency.getInstance("PLN");
+        Currency usdCurrency = Currency.getInstance("USD");
+
+        subAccounts.add(createSubaccount(plnCurrency, createAccountDto.getBalance().setScale(plnCurrency.getDefaultFractionDigits())));
+        subAccounts.add(createSubaccount(usdCurrency, BigDecimal.ZERO.setScale(usdCurrency.getDefaultFractionDigits())));
 
         return Account.builder()
                 .firstName(createAccountDto.getFirstName())

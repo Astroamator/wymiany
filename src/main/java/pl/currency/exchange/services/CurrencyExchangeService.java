@@ -7,6 +7,7 @@ package pl.currency.exchange.services;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class CurrencyExchangeService {
                 .orElseThrow(() -> new CurrencyNotFoundException(to.getCurrencyCode()));
 
         float exchangeRate = fromRate.getBid() / toRate.getAsk();
-        return amount.multiply(BigDecimal.valueOf(exchangeRate), new MathContext(to.getDefaultFractionDigits()));
+        return amount.multiply(BigDecimal.valueOf(exchangeRate).setScale(4, RoundingMode.FLOOR)).setScale(to.getDefaultFractionDigits(), RoundingMode.FLOOR);
     }
 
     private Optional<Rate> getRate(Currency currency) {

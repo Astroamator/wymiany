@@ -64,7 +64,7 @@ public class AccountService {
         Account account = accountRepository.findByPesel(createSubAccountDto.getPesel())
                 .orElseThrow(AccountDoNotExistsException::new);
 
-        Currency currency = getCurrency(createSubAccountDto.getCurrency())
+        Currency currency = getCurrency(createSubAccountDto.getCurrency().toUpperCase())
                 .orElseThrow(() -> new CurrencyNotFoundException(createSubAccountDto.getCurrency()));
 
         Rate rate = currencyExchangeService.getExternalCurrencyRate(currency)
@@ -74,7 +74,7 @@ public class AccountService {
             throw new SubAccountExistsException(currency.getCurrencyCode());
         }
 
-        SubAccount subAccount = accountAssembler.createSubaccount(currency, BigDecimal.ZERO);
+        SubAccount subAccount = accountAssembler.createSubaccount(currency, BigDecimal.ZERO.setScale(currency.getDefaultFractionDigits()));
         account.getSubAccounts().add(subAccount);
         accountRepository.save(account);
         return new ResponseEntity(account, HttpStatus.CREATED);
@@ -85,11 +85,11 @@ public class AccountService {
         Account account = accountRepository.findByPesel(exchangeDto.getPesel())
                 .orElseThrow(AccountDoNotExistsException::new);
 
-        Currency currencyFrom = getCurrency(exchangeDto.getFrom())
+        Currency currencyFrom = getCurrency(exchangeDto.getFrom().toUpperCase())
                 .orElseThrow(() -> new CurrencyNotFoundException(exchangeDto.getFrom()));
 
-        Currency currencyTo = getCurrency(exchangeDto.getTo())
-                .orElseThrow(() -> new CurrencyNotFoundException(exchangeDto.getFrom()));
+        Currency currencyTo = getCurrency(exchangeDto.getTo().toUpperCase())
+                .orElseThrow(() -> new CurrencyNotFoundException(exchangeDto.getTo()));
 
         SubAccount from = findSubAccountByCurrency(account, currencyFrom)
                 .orElseThrow(() -> new SubAccountNotFoundException(exchangeDto.getFrom()));

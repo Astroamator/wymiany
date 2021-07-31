@@ -8,6 +8,7 @@ package pl.currency.exchange.dtos;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Data;
 import pl.currency.exchange.validators.ValidPesel;
 
@@ -21,13 +22,15 @@ public class ExchangeDto {
     @ValidPesel(message = "{pesel.validpesel}")
     private String pesel;
     
-    @NotNull(message = "{from.notnull}")
+    @NotNull(message = "{from.currency.notnull}")
+    @Size(min = 3, max = 3, message = "{currency.size}")
     private String from;
 
-    @NotNull(message = "{to.notnull}")
+    @NotNull(message = "{to.currency.notnull}")
+    @Size(min = 3, max = 3, message = "{currency.size}")
     private String to;
 
-    @DecimalMin(value = "0.0", inclusive = false, message = "{amount.min}")
+    @DecimalMin(value = "0.00", inclusive = false, message = "{amount.min}")
     private BigDecimal amount;
 
 }
